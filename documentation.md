@@ -11,7 +11,7 @@ En términos generales, el dataset reúne información que puede representar dis
 
 ## Objetivo del análisis
 
-Hasta este punto, el trabajo realizado no se enfocó en entrenar un modelo, sino en preparar correctamente los datos para que posteriormente puedan ser usados en una etapa de modelado. El objetivo principal fue dejar listo un conjunto de entrenamiento limpio, transformado y balanceado, además de un conjunto de prueba separado correctamente para evaluación posterior.
+Hasta este punto, el trabajo realizado se ha enfocado en seleccionar, ejecutar y evaluar un modelo para, posteriormente, analizar sus métricas con el propósito de medir su desempeño. Esto permitirá, en el futuro, realizar mejoras y comprender mejor el funcionamiento de estos elementos de machine learning.
 
 ---
 
@@ -145,9 +145,128 @@ Es importante señalar que SMOTE solo se aplicó al conjunto de entrenamiento, n
 
 ---
 
+## Elección de modelo primera iteración
+
+Para esta etapa se seleccionó un modelo de Random Forest como primer modelo de clasificación. La elección se hizo porque este algoritmo suele dar buenos resultados en problemas de clasificación tabular, especialmente cuando existen relaciones no lineales entre variables y cuando se busca un modelo robusto frente al ruido.
+
+Random Forest funciona mediante un conjunto de árboles de decisión entrenados sobre distintas muestras de los datos. La predicción final se obtiene combinando el resultado de todos esos árboles, lo que normalmente produce modelos más estables que un solo árbol individual.
+
+<img width="1400" height="1000" alt="image" src="https://github.com/user-attachments/assets/92ce523d-43c5-48a5-9ae5-a5e80a764d93" />
+
+---
+
 ## Estado actual del proyecto
 
 En esta etapa todavía no se ha entrenado ningún modelo. Todo el trabajo realizado corresponde a la fase de preparación de datos, que es fundamental antes del modelado. Gracias a este procesamiento, el dataset ya quedó listo para la siguiente fase, donde se podrá entrenar y evaluar un modelo de clasificación con una base de datos más limpia, más consistente y mejor balanceada.
+
+---
+
+## Métricas de evaluación seleccionadas
+
+Debido a que el problema presenta desbalance de clases, no era suficiente evaluar el modelo únicamente con accuracy. Si se utilizara solo esa métrica, podría parecer que el modelo funciona bien aunque en realidad falle al detectar correctamente a los empleados promovidos, que corresponden a la clase minoritaria.
+
+1. Accuracy
+- Mide la proporción total de predicciones correctas. Aunque es útil como referencia general, en este caso debe interpretarse con cuidado debido al desbalance entre clases.
+
+3. Precision
+- Indica qué proporción de los casos que el modelo predijo como promovidos realmente correspondían a empleados promovidos. Esta métrica ayuda a medir qué tan confiables son las predicciones positivas.
+
+4. Recall
+- Mide qué proporción de los empleados que realmente fueron promovidos fue detectada por el modelo. Esta métrica es especialmente importante cuando interesa identificar la mayor cantidad posible de promociones reales.
+
+5. F1-score
+- Es la media armónica entre precision y recall. Se utilizó porque resume el equilibrio entre ambas métricas, lo cual es útil cuando ninguna de las dos por sí sola describe completamente el desempeño.
+
+Además de las métricas anteriores, se utilizó la matriz de confusión para analizar cuántos casos fueron clasificados correctamente y cuántos errores se cometieron en cada clase.
+
+---
+
+## Resultados obtenidos
+
+El modelo fue evaluado en entrenamiento, validación y prueba. Los resultados obtenidos fueron los siguientes:
+
+### Entrenamiento
+
+- Accuracy: 0.9192
+- Precision: 0.9146
+- Recall: 0.9249
+- F1-score: 0.9197
+
+
+### Validación
+
+- Accuracy: 0.8626
+- Precision: 0.3741
+- Recall: 0.5382
+- F1-score: 0.4414
+
+
+### Prueba
+
+- Accuracy: 0.8620
+- Precision: 0.3703
+- Recall: 0.5199
+- F1-score: 0.4325
+
+
+Además, el reporte de clasificación mostró que el modelo tuvo un desempeño alto sobre la clase 0, correspondiente a los empleados no promovidos, pero un desempeño considerablemente menor sobre la clase 1, correspondiente a los promovidos.
+
+###  Reporte de clasificación: Validación
+
+| Clase | Precision | Recall | F1-score | Support |
+|------|-----------:|-------:|---------:|--------:|
+| 0 | 0.95 | 0.90 | 0.92 | 2684 |
+| 1 | 0.37 | 0.54 | 0.44 | 301 |
+
+### Reporte de clasificación: Prueba
+
+| Clase | Precision | Recall | F1-score | Support |
+|------|-----------:|-------:|---------:|--------:|
+| 0 | 0.94 | 0.90 | 0.92 | 2684 |
+| 1 | 0.37 | 0.52 | 0.43 | 302 |
+
+## Interpretación de los resultados
+
+Los resultados muestran que el modelo logró aprender patrones útiles del conjunto de entrenamiento, ya que en ese subconjunto alcanzó valores altos en todas las métricas. Sin embargo, al pasar a validación y prueba se observó una disminución importante en el desempeño, especialmente en precision, recall y F1-score de la clase positiva.
+
+Esto sugiere que el modelo presenta cierto nivel de sobreajuste. En otras palabras, aprendió muy bien el conjunto de entrenamiento, pero no mantuvo el mismo nivel de generalización en datos nuevos.
+
+Aun así, los resultados de validación y prueba fueron muy parecidos entre sí, lo cual es una señal positiva. Esto indica que el comportamiento del modelo fue estable fuera del entrenamiento y que la evaluación final es consistente.
+
+También se observó que el valor de accuracy se mantuvo alrededor de 0.86 en validación y prueba. Aunque este resultado parece alto, no debe interpretarse como prueba suficiente de buen desempeño, ya que el conjunto de datos está desbalanceado y la mayoría de los registros pertenecen a la clase no promovida.
+
+La parte más importante del análisis está en la clase positiva. El modelo logró identificar aproximadamente la mitad de los empleados promovidos reales, lo cual se refleja en un recall cercano a 0.52–0.54. Sin embargo, la precision de 0.37 indica que una parte considerable de los casos predichos como promovidos realmente no lo eran. Como consecuencia, el F1-score de la clase positiva quedó en un nivel intermedio, alrededor de 0.43–0.44.
+
+En conjunto, esto significa que el modelo sí tiene capacidad para detectar promociones, pero todavía comete bastantes errores al hacerlo. Por lo tanto, puede considerarse una primera aproximación funcional, aunque aún hay espacio de mejora antes de tomarlo como modelo final.
+
+---
+
+## Estado actual del proyecto
+
+En este momento el proyecto ya cuenta con:
+
+- un dataset explorado y depurado
+- variables seleccionadas con base en correlación y redundancia
+- división en entrenamiento, validación y prueba
+- preprocesamiento para variables numéricas y categóricas
+- balanceo del conjunto de entrenamiento con SMOTE
+- una primera implementación de Random Forest
+- una evaluación inicial con métricas adecuadas para clasificación desbalanceada
+
+Con esto, la base experimental quedó lista para continuar con una siguiente fase de mejora del modelo, comparación con otras técnicas y documentación de resultados.
+
+## Posibles mejoras a futuro
+
+A partir de los resultados obtenidos, algunas acciones que podrían implementarse en etapas posteriores son:
+
+- ajuste de hiperparámetros del Random Forest
+- comparación contra otros modelos de clasificación
+- prueba de modelos de ensamble más avanzados, como XGBoost
+- análisis del umbral de decisión para mejorar el equilibrio entre precision y recall
+- revisión del efecto de usar SMOTE frente a otras estrategias de balanceo
+- análisis de importancia de variables para entender mejor cuáles atributos influyen más en la predicción
+
+Estas mejoras permitirán determinar si es posible aumentar el desempeño del modelo, especialmente en la detección de la clase positiva.
 
 ---
 
