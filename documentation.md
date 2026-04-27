@@ -241,32 +241,163 @@ En conjunto, esto significa que el modelo sí tiene capacidad para detectar prom
 
 ---
 
-## Estado actual del proyecto
+## Implementación de modelo basado en un articulo del estado del arte
 
-En este momento el proyecto ya cuenta con:
+Para esta etapa del proyecto se seleccionó un modelo **SAINT-like** implementado en **Keras**, inspirado en la arquitectura **SAINT (Self-Attention and Intersample Attention Transformer)**, la cual fue propuesta para trabajar con datos tabulares. Se tomó como referencia este artículo [*Enhancing Employee Promotion Prediction with Hybrid Deep Learning and SAINT-based Transformers*](https://arxiv.org/pdf/2604.10337) , ya que el modelo que propone ,resultaba útil para entender cómo este tipo de arquitectura puede aplicarse a variables laborales y organizacionales sin depender únicamente de modelos clásicos de árboles.
 
-- un dataset explorado y depurado
-- variables seleccionadas con base en correlación y redundancia
-- división en entrenamiento, validación y prueba
-- preprocesamiento para variables numéricas y categóricas
-- balanceo del conjunto de entrenamiento con SMOTE
-- una primera implementación de Random Forest
-- una evaluación inicial con métricas adecuadas para clasificación desbalanceada
+---
 
-Con esto, la base experimental quedó lista para continuar con una siguiente fase de mejora del modelo, comparación con otras técnicas y documentación de resultados.
+## ¿Qué es este modelo?
 
-## Posibles mejoras a futuro
+El modelo SAINT-like es una red neuronal diseñada para trabajar con **datos tabulares**, es decir, datos organizados en filas y columnas como los de este dataset de empleados. A diferencia de una red densa tradicional, este enfoque trata cada variable como una unidad de información separada y después aprende cómo se relaciona con las demás.
 
-A partir de los resultados obtenidos, algunas acciones que podrían implementarse en etapas posteriores son:
+En este proyecto, el modelo recibe variables **categóricas** y **numéricas** del empleado. Las variables categóricas se convierten en representaciones vectoriales mediante **embeddings**, mientras que las numéricas se transforman mediante capas densas para llevarlas a un formato compatible. Después, todas esas representaciones se combinan como si fueran una secuencia de tokens y pasan por un bloque de atención tipo Transformer.
 
-- ajuste de hiperparámetros del Random Forest
-- comparación contra otros modelos de clasificación
-- prueba de modelos de ensamble más avanzados, como XGBoost
-- análisis del umbral de decisión para mejorar el equilibrio entre precision y recall
-- revisión del efecto de usar SMOTE frente a otras estrategias de balanceo
-- análisis de importancia de variables para entender mejor cuáles atributos influyen más en la predicción
+Este modelo se eligió porque el problema planteado es de tipo **clasificación tabular** y contiene tanto variables numéricas como categóricas, por lo que resultaba interesante probar una arquitectura que pudiera capturar relaciones entre ambas de forma más flexible que un modelo tradicional.
 
-Estas mejoras permitirán determinar si es posible aumentar el desempeño del modelo, especialmente en la detección de la clase positiva.
+Además, SAINT fue considerado como una opción relevante porque en la literatura reciente se presenta como una arquitectura enfocada precisamente en datos tabulares y en la generación de representaciones contextuales de las variables. Esto lo vuelve atractivo en escenarios donde no solo importa el valor individual de cada columna, sino también la relación entre varias de ellas.
+
+- Sin embargo, el artículo tomado como referencia no fue usado como una receta exacta para replicar, sino como una guía conceptual. De hecho, ese trabajo reporta que los modelos basados en árboles mantuvieron un mejor desempeño que SAINT y que los enfoques híbridos evaluados. Por esta razón, en este proyecto el uso de SAINT-like se entiende principalmente como una alternativa experimental y de comparación, útil para analizar otra familia de modelos sobre el mismo problema.
+
+---
+
+## ¿Cómo funciona?
+
+El funcionamiento general del modelo puede resumirse en cuatro pasos:
+
+1. **Entrada de datos**  
+   El modelo recibe por separado las variables categóricas y las variables numéricas del empleado. Esta separación es importante porque ambos tipos de variables requieren un tratamiento distinto antes de entrar a la red.
+
+2. **Transformación de variables**  
+   Cada variable categórica se convierte en un embedding, es decir, en un vector numérico aprendido por el modelo. Por su parte, cada variable numérica pasa por una proyección densa que la transforma al mismo tamaño que los embeddings. De esta manera, todas las columnas quedan representadas en un espacio numérico comparable y pueden ser tratadas como una secuencia de tokens.
+
+3. **Bloque de atención**  
+   Una vez construidos los tokens, estos pasan por un bloque tipo Transformer. En esta parte, el mecanismo de atención permite que cada variable "observe" a las demás y aprenda qué tan relevantes son entre sí para la predicción. Por ejemplo, el modelo puede aprender que el efecto de una variable como `performance_score` cambia dependiendo de otras como `department`, `salary` o `years_at_company`.  
+   
+   Esto es importante porque en problemas tabulares no siempre basta con analizar cada columna de forma aislada; muchas veces la información útil está en la combinación entre varias variables. El bloque de atención ayuda precisamente a capturar esas interacciones. Además, dentro de este bloque también se incluyen conexiones residuales, normalización y una pequeña red feedforward, lo que permite refinar la representación aprendida sin perder la información original.
+   
+   En esta parte del modelo también aparecen varios de los hiperparámetros más importantes:
+   - **`EMB_DIM`**: define el tamaño de los embeddings y de los tokens internos del modelo.
+   - **`NUM_HEADS`**: indica cuántas cabezas de atención se usan, es decir, cuántas formas distintas tiene el modelo de analizar relaciones entre variables al mismo tiempo.
+   - **`NUM_LAYERS`**: define cuántos bloques Transformer se apilan.
+   - **`DROPOUT`**: controla el nivel de regularización, apagando aleatoriamente parte de las conexiones durante entrenamiento para reducir sobreajuste.
+
+4. **Clasificación final**  
+   La salida del bloque de atención se aplana y se envía a un clasificador denso. Este clasificador resume toda la información aprendida y genera una probabilidad entre 0 y 1 mediante una función sigmoide. Esa probabilidad representa qué tan probable es que el empleado sea promovido.
+   
+   En esta etapa también influyen hiperparámetros relacionados con el entrenamiento:
+   - **`BATCH_SIZE`**: determina cuántos ejemplos procesa el modelo por lote.
+   - **`EPOCHS`**: indica el número máximo de vueltas al conjunto de entrenamiento.
+   - **`LEARNING_RATE`**: controla qué tan grandes son los ajustes que hace el optimizador en cada actualización.
+   - **`PATIENCE`**: define cuántas épocas sin mejora en validación se permiten antes de detener automáticamente el entrenamiento.
+---
+
+## Estructura general del proyecto
+
+El proyecto se organizó en varios archivos para separar responsabilidades y hacer más claro el flujo completo, desde la preparación de datos hasta la inferencia con la interfaz.
+
+`config.py`
+
+Este archivo concentra la configuración general del proyecto. Aquí se definen rutas, nombres de archivos de salida, columna objetivo y los hiperparámetros principales del modelo, como `EMB_DIM`, `NUM_HEADS`, `NUM_LAYERS`, `DROPOUT`, `BATCH_SIZE`, `EPOCHS`, `LEARNING_RATE` y `PATIENCE`.
+
+- definición de rutas de trabajo (`DATA_DIR`, `OUTPUT_DIR`)
+- columna objetivo (`TARGET_COLUMN`)
+- columnas que se eliminan (`COLUMNS_TO_DROP`)
+- hiperparámetros del modelo
+- rutas donde se guardan modelo, métricas, historial y gráficas
+
+---
+
+`preprocessing.py`
+
+Este archivo se encarga de cargar el dataset, limpiarlo, separar entrenamiento, validación y prueba, identificar variables numéricas y categóricas, y aplicar las transformaciones necesarias antes de entrenar o predecir.
+
+- `load_dataset()`: carga el archivo CSV
+- `summarize_dataset()`: genera un resumen general del dataset
+- `drop_columns()`: elimina columnas que no se usarán
+- `split_data()`: separa los datos en entrenamiento, validación y prueba
+- `identify_feature_types()`: detecta cuáles columnas son numéricas y cuáles categóricas
+- `fit_and_transform_preprocessing()`: ajusta imputadores, escalado y codificación, y transforma los datos
+- `save_preprocessor()` y `load_preprocessor()`: guardan y recuperan el preprocesamiento
+- `transform_new_data()`: transforma nuevos datos para inferencia usando el mismo preprocesamiento del entrenamiento
+
+---
+
+`model.py`
+
+Aquí se define la arquitectura del modelo SAINT-like en Keras. Es el archivo donde se construye la red neuronal.
+
+- `SliceColumn`: capa personalizada que extrae una columna específica de la entrada
+- `transformer_block()`: define el bloque de atención tipo Transformer
+- `build_saint_like_model()`: arma el modelo completo con entradas categóricas, numéricas, bloque Transformer y clasificador final
+- `get_model_summary_text()`: guarda el resumen del modelo como texto
+
+---
+
+`utils.py`
+
+Este archivo contiene funciones auxiliares para entrenamiento, evaluación, guardado de resultados y generación de gráficas.
+
+- `seed_everything()`: fija semillas para reproducibilidad
+- `get_runtime_device()`: detecta si se usa CPU o GPU
+- `make_model_inputs()`: acomoda las entradas en el formato que espera Keras
+- `get_predictions()`: genera probabilidades y clases predichas
+- `evaluate_metrics()`: calcula accuracy, precision, recall, F1, ROC-AUC y PR-AUC
+- `report_dict()`: genera el classification report
+- `save_training_history()`: guarda el historial del entrenamiento
+- `plot_training_curve()`: genera la gráfica de pérdida
+- `save_confusion_matrix()`: guarda la matriz de confusión como imagen
+- `save_json()`: guarda resultados en archivos JSON
+
+---
+
+`train.py`
+
+Este archivo controla el proceso de entrenamiento completo. Toma el dataset, aplica preprocesamiento, construye el modelo, lo entrena, evalúa resultados y guarda todos los artefactos.
+
+- `parse_args()`: permite cambiar hiperparámetros desde la terminal
+- `main()`: ejecuta todo el flujo de entrenamiento
+- carga del dataset y limpieza inicial
+- preprocesamiento y guardado del preprocesador
+- cálculo de `class_weight` para manejar el desbalance
+- compilación del modelo con Adam y binary crossentropy
+- entrenamiento con `EarlyStopping`
+- guardado de modelo, métricas, reportes y gráficas
+
+---
+
+`inference.py`
+
+Este archivo sirve para usar el modelo ya entrenado sobre nuevos datos. No entrena nada, solo carga el modelo y genera predicciones.
+
+- `PromotionPredictor.__init__()`: carga el modelo y el preprocesador
+- `predict_dataframe()`: predice varias filas y devuelve probabilidad y clase
+- `predict_one()`: predice un solo registro a partir de un diccionario
+
+---
+
+`app.py`
+
+Este archivo crea la interfaz con Gradio para usar el modelo de forma visual.
+
+**Partes importantes:**
+- `build_predictor()`: inicializa el predictor si ya existe modelo entrenado
+- `load_source_dataset()`: carga el dataset base para generar empleados aleatorios
+- `default_values_for_ui()` y `clear_employee_values()`: controlan valores por defecto en la interfaz
+- `random_employee_values()`: llena el formulario con un empleado aleatorio
+- `predict_single()`: hace la predicción individual
+- `csv_format_view()`: muestra cómo debe verse el CSV
+- `predict_batch()`: procesa archivos CSV con varios empleados
+- definición de las pestañas de Gradio: una para crear empleado y otra para subir CSV
+
+---
+## Flujo del proyecto
+
+El flujo general del proyecto empieza en train.py, donde se cargan los datos y se aplican las funciones definidas en preprocessing.py para prepararlos correctamente. Con esos datos ya transformados, model.py construye la arquitectura del modelo SAINT-like. Después, el mismo train.py se encarga de entrenarlo y utiliza funciones de utils.py para calcular métricas, evaluar el desempeño y guardar los resultados. Una vez terminado este proceso, tanto el modelo entrenado como el preprocesador se almacenan en la carpeta outputs/. Más adelante, inference.py carga esos archivos para poder hacer predicciones sobre datos nuevos, y finalmente app.py usa esa parte de inferencia para mostrar las predicciones dentro de la interfaz desarrollada en Gradio.
+
+---
+
+
 
 ---
 
