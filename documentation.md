@@ -335,6 +335,8 @@ A continuación se presentan las distintas iteraciones evaluadas del modelo SAIN
 
 ### Iteración 1
 
+<img width="629" height="391" alt="image" src="https://github.com/user-attachments/assets/095608d1-c62a-424b-914b-5e8a9ab1da3d" />
+
 #### Hiperparámetros
 - `EMB_DIM = 8`
 - `NUM_HEADS = 1`
@@ -377,6 +379,9 @@ A continuación se presentan las distintas iteraciones evaluadas del modelo SAIN
 Esta configuración se tomó como punto de partida porque representa una versión sencilla y ligera del modelo. Se eligió para establecer una línea base con la cual comparar el efecto de modificar el tamaño de embeddings, el número de heads y la profundidad del bloque Transformer. Al usar una estructura simple, esta iteración permite observar el comportamiento inicial del modelo sin añadir demasiada complejidad arquitectónica.
 
 ### Iteración 2
+
+<img width="629" height="391" alt="image" src="https://github.com/user-attachments/assets/0155dc6a-47bb-45eb-ab97-b0437267e896" />
+
 
 #### Hiperparámetros
 - `EMB_DIM = 16`
@@ -421,6 +426,9 @@ En esta iteración se incrementó `EMB_DIM` para darle al modelo una representac
 
 ### Iteración 3
 
+<img width="629" height="391" alt="image" src="https://github.com/user-attachments/assets/2bfc0a64-bd6f-4ebd-bfe6-20848ebeac0d" />
+
+
 #### Hiperparámetros
 - `EMB_DIM = 16`
 - `NUM_HEADS = 2`
@@ -463,6 +471,9 @@ En esta iteración se incrementó `EMB_DIM` para darle al modelo una representac
 Después de aumentar el tamaño del embedding, el siguiente paso fue incrementar `NUM_HEADS` para que el bloque de atención pudiera analizar relaciones entre variables desde más de una perspectiva. Con esta modificación se buscó evaluar si múltiples heads ayudaban a capturar interacciones más útiles entre columnas, manteniendo todavía una sola capa Transformer para no aumentar demasiado la complejidad del modelo.
 
 ### Iteración 4
+
+<img width="629" height="391" alt="image" src="https://github.com/user-attachments/assets/d8734eee-561d-4341-99ce-39e69750c5b2" />
+
 
 #### Hiperparámetros
 - `EMB_DIM = 16`
@@ -507,6 +518,8 @@ En esta iteración se añadió un segundo bloque Transformer mediante `NUM_LAYER
 
 ### Iteración 5
 
+<img width="629" height="391" alt="image" src="https://github.com/user-attachments/assets/f65a2b56-1973-416a-97df-994948a3bee7" />
+
 #### Hiperparámetros
 - `EMB_DIM = 16`
 - `NUM_HEADS = 2`
@@ -549,58 +562,40 @@ En esta iteración se añadió un segundo bloque Transformer mediante `NUM_LAYER
 Esta configuración se eligió para introducir mayor regularización y un entrenamiento un poco más fino. El aumento de `DROPOUT` buscó reducir el sobreajuste, mientras que un `BATCH_SIZE` más pequeño permitió hacer más actualizaciones durante cada época. Además, al aumentar `EPOCHS` se dio al modelo más oportunidad de aprendizaje, dejando que `PATIENCE` controlara automáticamente el momento en que debía detenerse si ya no había mejora en validación.
 
 ---
-## Comparación entre iteraciones del modelo
+## Comparación entre métricas de las iteraciones del modelo
 
 A partir de los resultados obtenidos, puede observarse que no existió una sola iteración que dominara de forma absoluta en todas las métricas. Por esta razón, el análisis debe hacerse revisando cada métrica por separado y después interpretando el comportamiento general del modelo en función del objetivo del problema. Dado que se trata de una clasificación desbalanceada, no basta con observar únicamente el accuracy; también es necesario considerar precision, recall, F1-score, ROC-AUC y PR-AUC, especialmente en validación y prueba.
-
-
-#### Análisis de Accuracy
 
 La métrica de **accuracy** mide la proporción total de predicciones correctas. En este caso, la mejor iteración en el conjunto de prueba fue la **Iteración 2**, con un valor de `0.8939`, seguida por la **Iteración 5** con `0.8899`. Las iteraciones 1 y 4 obtuvieron los valores más bajos, aunque la diferencia no fue extremadamente grande.
 
 Esto indica que la Iteración 2 fue la que logró el mayor número de aciertos globales. Sin embargo, como la clase negativa es mayoritaria, este resultado debe interpretarse con cuidado, ya que un valor alto de accuracy no garantiza por sí solo que el modelo esté detectando bien a los empleados promovidos.
 
----
-
-### Análisis de Precision
-
 La **precision** indica qué proporción de los empleados predichos como promovidos realmente lo eran. En el conjunto de prueba, la mejor fue nuevamente la **Iteración 2**, con `0.4811`, seguida por la **Iteración 5** con `0.4698` y la **Iteración 3** con `0.4649`.
 
 Esto sugiere que la Iteración 2 fue la más confiable al emitir predicciones positivas, es decir, fue la que produjo menos falsos positivos en comparación con las demás. En otras palabras, cuando este modelo predijo que un empleado sería promovido, tuvo una mayor probabilidad de acertar. Este comportamiento parece estar relacionado con el aumento de `EMB_DIM`, que probablemente permitió una representación interna más rica de las variables.
-
----
-
-### Análisis de Recall
 
 El **recall** mide qué proporción de los empleados realmente promovidos fue detectada por el modelo. En esta métrica, la mejor iteración fue la **Iteración 4**, con `0.8110` en prueba, seguida muy de cerca por la **Iteración 1** con `0.8090`. Las iteraciones 2 y 5 quedaron por debajo.
 
 Este resultado es importante porque el recall es especialmente relevante cuando interesa detectar la mayor cantidad posible de promociones reales. La Iteración 4 destacó en este aspecto, lo que indica que su configuración más profunda, con `NUM_LAYERS = 2`, ayudó al modelo a encontrar mejor la clase positiva. Aunque no fue la más precisa, sí fue la más sensible para identificar empleados promovidos.
 
----
-
-### Análisis de F1-score
-
 El **F1-score** resume el equilibrio entre precision y recall. En el conjunto de prueba, la mejor iteración fue la **Iteración 2**, con `0.5943`, seguida por la **Iteración 5** con `0.5878`, la **Iteración 3** con `0.5845`, la **Iteración 4** con `0.5828` y finalmente la **Iteración 1** con `0.5785`.
 
 Esto indica que la Iteración 2 fue la que logró el mejor balance entre detectar promovidos y no equivocarse demasiado al marcarlos como positivos. Aunque la Iteración 4 tuvo mejor recall, su precision más baja redujo su F1-score. Por tanto, si el criterio principal fuera mantener equilibrio entre ambas métricas, la Iteración 2 sería la mejor opción.
-
----
-
-### Análisis de ROC-AUC
 
 La métrica **ROC-AUC** mide qué tan bien el modelo logra separar ambas clases de forma general. En prueba, la mejor iteración fue la **Iteración 4**, con `0.9380`, seguida por la **Iteración 3** con `0.9363`, la **Iteración 5** con `0.9358`, la **Iteración 1** con `0.9350` y la **Iteración 2** con `0.9343`.
 
 Esto muestra que la Iteración 4 fue la que mejor logró distinguir entre empleados promovidos y no promovidos a nivel global, independientemente del umbral final de clasificación. En otras palabras, aunque no fue la mejor en accuracy o F1-score, sí fue una de las más sólidas en capacidad de separación entre clases.
 
----
-
-### Análisis de PR-AUC
-
 La métrica **PR-AUC** es especialmente importante en este problema, porque se enfoca más en el comportamiento de la clase positiva dentro de un contexto desbalanceado. En prueba, la mejor fue nuevamente la **Iteración 4**, con `0.6635`, seguida por la **Iteración 5** con `0.6581`, la **Iteración 3** con `0.6533`, la **Iteración 1** con `0.6508` y la **Iteración 2** con `0.6446`.
 
 Esto sugiere que la Iteración 4 fue la que mejor manejó el compromiso entre precision y recall a distintos umbrales, no solo al umbral fijo de 0.5. Por ello, desde la perspectiva de un problema desbalanceado, esta iteración resulta particularmente fuerte y relevante.
 
----
+Añandido a esto comparar las métricas de entrenamiento, validació y prueba, no se observa un caso claro de overfitting en las iteraciones evaluadas. En general, los resultados se mantienen relativamente estables entre los tres conjuntos, lo que indica que el modelo no está memorizando únicamente los datos de entrenamiento, sino que conserva un desempeño similar ante datos no vistos.
+
+La iteración que muestra más señales de posible sobreajuste es la Iteración 5, ya que obtiene el F1-score más alto en entrenamiento con 0.6017, pero baja a 0.5823 en validación y a 0.5878 en prueba. Esta diferencia sugiere que el modelo empezó a ajustarse un poco más al conjunto de entrenamiento. Sin embargo, la caída no es suficientemente grande como para afirmar que existe un overfitting severo. Por lo tanto, puede considerarse una ligera tendencia al sobreajuste, pero no un problema grave.
+
+En conclusión, ninguna iteración está claramente overfiteada. Las iteraciones 1, 2 y 3 son las más estables, mientras que las iteraciones 4 y 5 muestran una separación ligeramente mayor entre train y validation. La Iteración 5 tiene el mejor F1-score en entrenamiento, pero no necesariamente generaliza mejor, por lo que debe evaluarse con cuidado frente a la Iteración 4 y la Iteración 2.
+
 
 ## Comparación individual entre iteraciones
 
@@ -618,6 +613,8 @@ La Iteración 4 fue la mejor en recall, ROC-AUC y PR-AUC. Esto la vuelve especia
 
 ### Iteración 5
 La Iteración 5 no fue la mejor absoluta en ninguna métrica, pero sí mostró un desempeño muy equilibrado. Mejoró respecto a la Iteración 4 en accuracy, precision y F1-score, aunque bajó ligeramente en recall, ROC-AUC y PR-AUC. Esto indica que la mayor regularización y el ajuste en batch size ayudaron a estabilizar el modelo y a hacerlo competitivo en casi todos los indicadores, quedando como una alternativa intermedia bastante sólida.
+
+
 
 ---
 
@@ -651,7 +648,7 @@ Por esta razón, no existe una única “mejor” iteración para todos los caso
 
 Al comparar SAINT-like con Random Forest, también se puede concluir que Random Forest fue útil como modelo base por su simplicidad, menor costo computacional y facilidad de entrenamiento. Sin embargo, su desempeño fuera del entrenamiento fue claramente inferior, especialmente en la detección de la clase positiva. Por otro lado, SAINT-like requirió mayor poder computacional, más tiempo de entrenamiento y una arquitectura más compleja, pero ofreció mejores resultados de generalización y un desempeño más fuerte en las métricas críticas del problema.
 
-* En conjunto, SAINT-like representa la mejor alternativa entre los dos enfoques evaluados cuando la prioridad es identificar correctamente promociones reales. Random Forest puede mantenerse como una referencia inicial, pero el modelo SAINT-like demostró ser más adecuado para el objetivo principal del proyecto.
+En conjunto, SAINT-like representa la mejor alternativa entre los dos enfoques evaluados cuando la prioridad es identificar correctamente promociones reales. Random Forest puede mantenerse como una referencia inicial, pero el modelo SAINT-like demostró ser más adecuado para el objetivo principal del proyecto.
 
 ---
 ## Fuente del dataset
