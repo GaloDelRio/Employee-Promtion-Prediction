@@ -24,7 +24,7 @@ También se analizó la distribución de la variable objetivo **`promoted`** y v
 Después de la exploración inicial, se construyó una **matriz de correlación** con las variables numéricas para entender qué atributos tenían relación con la variable objetivo y cuáles aportaban muy poca información.
 
 
-<img width="1648" height="1492" alt="image" src="https://github.com/user-attachments/assets/013560d0-b3a4-4f80-88fc-9e2304608d59" />
+<img width="1648" height="1492" alt="image" src="https://github.com/user-attachments/assets/013560d0-b3a4-4f80-88fc-9e2304608d59" /><br>
 
 
 A partir de este análisis se identifice que varias columnas tenían una correlación prácticamente nula con `promoted`, por lo que era razonable considerar que su aporte al modelo sería muy bajo. Entre ellas estaban variables como:
@@ -120,7 +120,7 @@ Para esta etapa se seleccionó un modelo de Random Forest como primer modelo de 
 
 Random Forest funciona mediante un conjunto de árboles de decisión entrenados sobre distintas muestras de los datos. La predicción final se obtiene combinando el resultado de todos esos árboles, lo que normalmente produce modelos más estables que un solo árbol individual.
 
-<img width="1400" height="1000" alt="image" src="https://github.com/user-attachments/assets/92ce523d-43c5-48a5-9ae5-a5e80a764d93" />
+<img width="1400" height="1000" alt="image" src="https://github.com/user-attachments/assets/92ce523d-43c5-48a5-9ae5-a5e80a764d93" /><br>
 
 ---
 
@@ -211,11 +211,9 @@ Se utilizó un modelo **SAINT-like** y no una implementación completa de **SAIN
 
 La principal diferencia es que el modelo usado en el proyecto toma las variables categórica y numericas mediante **embeddings**, transforma las variables numéricas con capas densas y después combina ambas reprersentaciones para pasarlas por bloques de atención. Por eso se le llama **SAINT-like**: no es SAINT puro, pero está inspirado en su enfoque para datos tabulares. Esta decisión permitió experimentar con una arquitectura moderna basada en atención sin aumentar demasiado la complejidad del proyecto, manteniendo una implementación más clara, compatible con Keras y adecuada para comparar contra modelos clásicos como **Random Forest**.
 
-
 Sin embargo, el artículo tomado como referencia no fue usado como una receta exacta para replicar, sino como una guía conceptual. De hecho, ese trabajo reporta que los modelos basados en árboles mantuvieron un mejor desempeño que SAINT y que los enfoques híbridos evaluados. Por esta razón, en este proyecto el uso de SAINT-like se entiende principalmente como una alternativa experimental y de comparación, útil para analizar otra familia de modelos sobre el mismo problema.
 
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/30ebea11-ef03-4fe4-bae1-d0ac2560ebaa" />
-
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/80a57db9-2e3b-4a55-b140-dccf385d45ca" /><br>
 
 ---
 
@@ -248,6 +246,33 @@ El funcionamiento general del modelo puede resumirse en cuatro pasos:
    - **`EPOCHS`**: indica el número máximo de vueltas al conjunto de entrenamiento.
    - **`LEARNING_RATE`**: controla qué tan grandes son los ajustes que hace el optimizador en cada actualización.
    - **`PATIENCE`**: define cuántas épocas sin mejora en validación se permiten antes de detener automáticamente el entrenamiento.
+
+La siguiente tabla describe la arquitectura interna del modelo utilizado, mostrando cómo fluye la información desde las variables de entrada hasta la predicción final. 
+
+
+| Etapa | Capa | Entrada | Salida | Neuronas / Unidades | Se conecta después con | Operación / Activación |
+|---|---|---:|---:|---:|---|---|
+| 1 | Input categórico | 6 variables categóricas | (None, 6) | 6 valores | SliceColumn categóricas | Ninguna |
+| 2 | Input numérico | 29 variables numéricas | (None, 29) | 29 valores | SliceColumn numéricas | Ninguna |
+| 3 | SliceColumn categóricas | 6 columnas | 6 columnas separadas | 1 valor por variable | Embedding | Separación de columnas |
+| 4 | SliceColumn numéricas | 29 columnas | 29 columnas separadas | 1 valor por variable | Dense Projection | Separación de columnas |
+| 5 | Embedding categórico | 1 categoría por variable | Vector por variable | 16 unidades por variable | Reshape | Embedding aprendible |
+| 6 | Dense Projection numérica | 1 valor numérico por variable | Vector por variable | 16 neuronas por variable | Reshape | Proyección lineal / Dense |
+| 7 | Reshape | Vectores de 16 | Tokens individuales | (None, 1, 16) | Concatenate | Cambio de forma |
+| 8 | Concatenate Tokens | 35 tokens | (None, 35, 16) | 35 tokens de tamaño 16 | MultiHead Attention | Unión de tokens |
+| 9 | MultiHead Attention | (None, 35, 16) | (None, 35, 16) | 16 por token | Add residual | Self-Attention |
+| 10 | Add residual 1 | Tokens originales + atención | (None, 35, 16) | 16 por token | Layer Normalization | Suma residual |
+| 11 | Layer Normalization 1 | (None, 35, 16) | (None, 35, 16) | 16 por token | Dense Feedforward 1 | Normalización |
+| 12 | Dense Feedforward 1 | (None, 35, 16) | (None, 35, 32) | 32 neuronas por token | Dropout | ReLU |
+| 13 | Dropout Transformer | (None, 35, 32) | (None, 35, 32) | 32 por token | Dense Feedforward 2 | Regularización |
+| 14 | Dense Feedforward 2 | (None, 35, 32) | (None, 35, 16) | 16 neuronas por token | Add residual 2 | Lineal |
+| 15 | Add residual 2 | Tokens normalizados + feedforward | (None, 35, 16) | 16 por token | Layer Normalization 2 | Suma residual |
+| 16 | Layer Normalization 2 | (None, 35, 16) | (None, 35, 16) | 16 por token | Flatten | Normalización |
+| 17 | Flatten | (None, 35, 16) | (None, 560) | 560 valores | Dense clasificador | Aplanamiento |
+| 18 | Dense clasificador | 560 valores | (None, 64) | 64 neuronas | Dropout clasificador | ReLU |
+| 19 | Dropout clasificador | 64 valores | (None, 64) | 64 valores | Output | Regularización |
+| 20 | Output | 64 valores | (None, 1) | 1 neurona | Resultado final | Sigmoid |
+
 ---
 
 ## Estructura general del proyecto
