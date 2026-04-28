@@ -672,7 +672,7 @@ En términos prácticos, SAINT-like fue claramente superior para detectar emplea
 
 ## Conclusión
 
-En este trabajo se desarrolló un flujo completo de machine learning para predecir promociones laborales, abarcando desde la selección y preparación del dataset hasta la comparación y refinamiento de modelos. El preprocesamiento aplicado permitió trabajar con datos más limpios y adecuados para entrenamiento, mientras que el manejo del desbalance fue clave para evaluar correctamente la clase positiva.
+En este trabajo se desarrolló un flujo completo de deep-learning para predecir promociones laborales, abarcando desde la selección y preparación del dataset hasta la comparación y refinamiento de modelos. El preprocesamiento aplicado permitió trabajar con datos más limpios y adecuados para entrenamiento, mientras que el manejo del desbalance fue clave para evaluar correctamente la clase positiva.
 
 Los resultados mostraron que el modelo SAINT-like superó a Random Forest, especialmente en métricas relevantes para datos desbalanceados. Entre las iteraciones probadas, la Iteración 4 fue la mejor opción global al obtener el mayor recall, ROC-AUC y PR-AUC, destacando en la detección de empleados promovidos.
 
