@@ -2,7 +2,7 @@
 
 ## Dataset utilizado
 
-Para este proyecto se utilizó el dataset Employee Promtion Prediction Dataset, publicado en Kaggle por Rohit Kumar. Se eligió porque ofrece un volumen amplio de registros, variables variadas y una variable objetivo claramente definida, características importantes para entrenar y evaluar modelos de inteligencia artificial de forma consistente. 
+Para este proyecto se utilizó el dataset Employee Promtion Prediction Dataset, publicado en Kaggle por Rohit Kumar y actualizado en 2026 (Kumar, 2026). Se eligió porque ofrece un volumen amplio de registros, variables variadas y una variable objetivo claramente definida, características importantes para entrenar y evaluar modelos de inteligencia artificial de forma consistente. 
 
 Este conjunto de datos está orientado al análisis de variables relacionadas con el desempeño, compromiso y características laborales de empleados, con el objetivo de predecir si un colaborador será promovido o no. Este contiene alrededor de **100,000 registros**,con **43 variables** y una variable objetivo llamada **promoted**.
 
@@ -54,21 +54,29 @@ Una vez reducido el dataset, se separó la información en:
 
 Esta separación era necesaria para preparar el problema de aprendizaje supervisado, donde el modelo recibirá las variables de entrada y tratará de aprender patrones para predecir la variable objetivo.
 
+| Estado | Variables |
+|---|---|
+| Dataset original | 43 variables predictoras + 1 variable objetivo (`promoted`) |
+| Variables eliminadas | `team_size`, `remote_work_ratio`, `deadline_adherence_rate`, `cross_department_projects`, `mentoring_sessions`, `internal_mobility_score`, `attendance_rate`, `training_hours_last_year`, `certifications_count`, `performance_last_year`, `performance_two_years_ago` |
+| Variables finales usadas en X | `employee_id`, `age`, `gender`, `department`, `job_level`, `years_at_company`, `years_in_current_role`, `years_since_last_promotion`, `performance_score`, `monthly_salary`, `work_hours_per_week`, `projects_handled`, `overtime_hours`, `sick_days`, `leadership_training`, `technical_skills_score`, `communication_skills_score`, `awards_won`, `last_promotion_rating`, `job_satisfaction`, `engagement_score`, `peer_feedback_score`, `manager_feedback_score`, `department_revenue`, `company_tenure_avg`, `promotion_history`, `innovation_score`, `customer_satisfaction_score`, `sales_target_achievement`, `manager_tenure`, `relocation_willingness`, `education_level`, `marital_status`, `dependents`, `region` |
+| Variable objetivo | `promoted` |
+
+#### Divición del dataset
 
 El siguiente paso fue dividir los datos en dos grupos:
 
 - Conjunto de entrenamiento para ajustar el modelo posteriormente.
 - Conjunto de prueba para evaluar su desempeño con datos no vistos.
 
-La división se hizo usando una proporción de **80% para entrenamiento** y **20% para prueba**, manteniendo la proporción original de la variable objetivo en ambos conjuntos. Esto último fue importante porque, al estar desbalanceadas las clases, era necesario conservar una distribución similar en entrenamiento y prueba para que la evaluación futura fuera representativa del problema real.
-
-Antes de transformar los datos, se identificó qué variables eran **numéricas** y cuáles eran **categóricas**. Esto fue importante porque ambos tipos de datos necesitan un tratamiento distinto.
-
-Las variables numéricas requieren normalmente escalamiento para que sus magnitudes sean comparables, mientras que las variables categóricas deben convertirse a una representación numérica que pueda ser entendida por los algoritmos de machine learning.
+La división se realizó en tres subconjuntos: 80% para entrenamiento, 10% para validación y 10% para prueba. Para lograrlo, primero se separó el dataset en un 80% de entrenamiento y un 20% temporal; posteriormente, ese 20% se dividió en dos partes iguales para formar los conjuntos de validación y prueba. En todo el proceso se mantuvo la proporción original de la variable objetivo mediante estratificación, lo cual fue importante porque, al tratarse de un problema con clases desbalanceadas, era necesario conservar una distribución similar de empleados promovidos y no promovidos en los tres conjuntos para que la evaluación fuera representativa del problema real.
 
 ---
 
 ## Preprocesamiento de los datos
+
+Antes de transformar los datos, se identificó qué variables eran **numéricas** y cuáles eran **categóricas**. Esto fue importante porque ambos tipos de datos necesitan un tratamiento distinto.
+
+Las variables numéricas requieren normalmente escalamiento para que sus magnitudes sean comparables, mientras que las variables categóricas deben convertirse a una representación numérica que pueda ser entendida por los algoritmos de machine learning.
 
 Después se construyó una etapa de preprocesamiento diferenciando el tratamiento según el tipo de variable.
 
@@ -191,7 +199,7 @@ En conjunto, esto significa que el modelo sí tiene capacidad para detectar prom
 
 ## Implementación de modelo basado en un articulo del estado del arte
 
-Para esta etapa del proyecto se seleccionó un modelo **SAINT-like** implementado en **Keras**, inspirado en la arquitectura **SAINT (Self-Attention and Intersample Attention Transformer)**, la cual fue propuesta para trabajar con datos tabulares. Se tomó como referencia este artículo [*Enhancing Employee Promotion Prediction with Hybrid Deep Learning and SAINT-based Transformers*](https://arxiv.org/pdf/2604.10337) , ya que el modelo que propone ,resultaba útil para entender cómo este tipo de arquitectura puede aplicarse a variables laborales y organizacionales sin depender únicamente de modelos clásicos de árboles.
+Para esta etapa del proyecto se seleccionó un modelo **SAINT-like** implementado en **Keras**, inspirado en la arquitectura **SAINT (Self-Attention and Intersample Attention Transformer)**, la cual fue propuesta para trabajar con datos tabulares. Se tomó como referencia este artículo [*Enhancing Employee Promotion Prediction with Hybrid Deep Learning and SAINT-based Transformers*](https://arxiv.org/pdf/2604.10337) (Derrazi & Roshan Sharami, 2026) , ya que el modelo que propone ,resultaba útil para entender cómo este tipo de arquitectura puede aplicarse a variables laborales y organizacionales sin depender únicamente de modelos clásicos de árboles.
 
 Este modelo SAINT se eligió porque el problema planteado es de tipo **clasificación tabular** y contiene tanto variables numéricas como categóricas, por lo que resultaba interesante probar una arquitectura que pudiera capturar relaciones entre ambas de forma más flexible que un modelo tradicional.
 
@@ -334,7 +342,7 @@ El flujo general del proyecto empieza en train.py, donde se cargan los datos y s
 
 ## Respaldo de las métricas con el artículo de referencia
 
-Como se mencionó anteriormente, para el desarrollo del modelo **SAINT-like** se tomó como referencia el artículo *Integrating SAINT with Tree-Based Models: A Case Study in Employee Attrition Prediction*. Por esa misma razón, la estrategia de evaluación también se alineó con los criterios utilizados en ese trabajo, de modo que tanto la arquitectura como la forma de medir resultados siguieran una base metodológica coherente.
+Como se mencionó anteriormente, para el desarrollo del modelo **SAINT-like** se tomó como referencia el artículo  [*Enhancing Employee Promotion Prediction with Hybrid Deep Learning and SAINT-based Transformers*](https://arxiv.org/pdf/2604.10337) (Derrazi & Roshan Sharami, 2026). Por esa misma razón, la estrategia de evaluación también se alineó con los criterios utilizados en ese trabajo, de modo que tanto la arquitectura como la forma de medir resultados siguieran una base metodológica coherente.
 
 En dicho artículo, los autores establecen como métrica principal **ROC-AUC**, complementándola con **Precision, Recall y F1-score** para obtener una visión más completa del comportamiento de los modelos. Esto demuestra que, en investigaciones recientes sobre modelos basados en SAINT aplicados a datos laborales tabulares, no se considera suficiente evaluar únicamente con accuracy, sino que se priorizan métricas capaces de analizar discriminación entre clases y desempeño sobre la clase positiva. 
 
@@ -637,12 +645,17 @@ La Iteración 5 no fue la mejor absoluta en ninguna métrica, pero sí mostró u
 
 ## ¿Cuál fue la mejor iteración?
 
-La mejor iteración depende del criterio principal con el que se evalúe el modelo. Como el problema está desbalanceado, no basta con observar únicamente el accuracy, ya que una métrica alta no siempre significa que el modelo esté detectando correctamente a los empleados promovidos.
+La **Iteración 4** fue la mejor versión del modelo en este problema. Debido a que el dataset está desbalanceado, no es suficiente basarse únicamente en accuracy, ya que esa métrica puede verse favorecida por la clase mayoritaria y no reflejar correctamente el desempeño sobre los empleados promovidos. En escenarios de desbalance, resulta más importante analizar métricas enfocadas en la clase positiva, como recall y PR-AUC. 
 
-Si se toma como referencia el desempeño de clasificación final usando el umbral actual, la **Iteración 2** puede considerarse la mejor. Esta iteración obtuvo el mejor accuracy, la mejor precision y el mejor F1-score, por lo que fue la opción más sólida cuando se buscó un equilibrio entre desempeño general y confiabilidad en las predicciones positivas. En otras palabras, fue la iteración que mejor funcionó bajo las condiciones actuales de decisión del modelo.
 
-Sin embargo, si se considera con mayor importancia la detección de la clase positiva, la **Iteración 4** resulta más adecuada. Esta iteración obtuvo mejores resultados en recall, ROC-AUC y PR-AUC, métricas especialmente relevantes en un problema donde interesa identificar la mayor cantidad posible de empleados promovidos. Por esta razón, aunque la Iteración 2 tuvo un mejor balance con el umbral actual, la Iteración 4 puede considerarse la mejor opción global cuando el objetivo principal es mejorar la detección de promociones reales.
+Bajo este criterio, la Iteración 4 obtuvo los mejores resultados globales al alcanzar el mayor **recall (0.8110)**, el mejor **ROC-AUC (0.9380)** y el mejor **PR-AUC (0.6635)** en el conjunto de prueba. Esto significa que fue la configuración más efectiva para identificar empleados realmente promovidos y la que mostró mejor capacidad de separación entre clases. En un problema donde la clase positiva es minoritaria, detectar más casos reales tiene mayor valor que aumentar ligeramente el accuracy.
 
+El rendimiento superior de esta iteración también se relaciona con la combinación de hiperparámetros utilizada: **EMB_DIM = 16**, **NUM_HEADS = 2** y **NUM_LAYERS = 2**. Un embedding más amplio permitió representar mejor la información de cada variable, dos cabezas de atención ayudaron a analizar distintas relaciones entre columnas al mismo tiempo, y dos capas Transformer dieron mayor profundidad para refinar esos patrones aprendidos. En conjunto, esta configuración ofreció un equilibrio adecuado entre capacidad de aprendizaje y generalización, superando a versiones más simples que tenían menor capacidad representacional.
+
+Sin embargo, estos resultados también muestran que hacer más grandes los hiperparámetros no garantiza automáticamente un mejor modelo. Aumentar tamaño, profundidad o complejidad puede generar más capacidad para aprender, pero también puede provocar sobreajuste, entrenamiento inestable o mejoras mínimas si el cambio ya no aporta información útil.
+
+Aunque la Iteración 2 presentó valores más altos en accuracy, precision y F1-score con el umbral actual, la diferencia no compensa la pérdida en detección de la clase positiva. Por ello, la **Iteración 4 se selecciona como el mejor modelo final**, ya que ofrece el desempeño más sólido y más adecuado para un escenario de clasificación desbalanceada.
+  
 ---
 
 ## Comparación entre SAINT-like y Random Forest
@@ -659,16 +672,15 @@ En términos prácticos, SAINT-like fue claramente superior para detectar emplea
 
 ## Conclusión
 
-En conclusión, los resultados muestran que los cambios realizados en la arquitectura del modelo SAINT-like sí tuvieron un impacto real en su comportamiento. Aumentar el valor de EMB_DIM ayudó a mejorar la calidad general de la clasificación con el umbral actual, mientras que incrementar NUM_HEADS y NUM_LAYERS permitió capturar relaciones más complejas entre las variables, favoreciendo métricas más orientadas a la detección de la clase positiva.
+En este trabajo se desarrolló un flujo completo de machine learning para predecir promociones laborales, abarcando desde la selección y preparación del dataset hasta la comparación y refinamiento de modelos. El preprocesamiento aplicado permitió trabajar con datos más limpios y adecuados para entrenamiento, mientras que el manejo del desbalance fue clave para evaluar correctamente la clase positiva.
 
-Por esta razón, no existe una única “mejor” iteración para todos los casos. Si el objetivo principal es obtener el mejor equilibrio de clasificación final con el umbral actual, la **Iteración 2** representa la mejor alternativa. En cambio, si el objetivo central del proyecto es detectar la mayor cantidad posible de empleados promovidos dentro de un problema desbalanceado, la **Iteración 4** puede considerarse la opción más adecuada.
+Los resultados mostraron que el modelo SAINT-like superó a Random Forest, especialmente en métricas relevantes para datos desbalanceados. Entre las iteraciones probadas, la Iteración 4 fue la mejor opción global al obtener el mayor recall, ROC-AUC y PR-AUC, destacando en la detección de empleados promovidos.
 
-Al comparar SAINT-like con Random Forest, también se puede concluir que Random Forest fue útil como modelo base por su simplicidad, menor costo computacional y facilidad de entrenamiento. Sin embargo, su desempeño fuera del entrenamiento fue claramente inferior, especialmente en la detección de la clase positiva. Por otro lado, SAINT-like requirió mayor poder computacional, más tiempo de entrenamiento y una arquitectura más compleja, pero ofreció mejores resultados de generalización y un desempeño más fuerte en las métricas críticas del problema.
-
-En conjunto, SAINT-like representa la mejor alternativa entre los dos enfoques evaluados cuando la prioridad es identificar correctamente promociones reales. Random Forest puede mantenerse como una referencia inicial, pero el modelo SAINT-like demostró ser más adecuado para el objetivo principal del proyecto.
+Finalmente, también se comprobó que aumentar la complejidad del modelo no garantiza mejores resultados, por lo que el ajuste de hiperparámetros debe buscar equilibrio entre capacidad de aprendizaje y generalización. En conjunto, el proyecto demuestra que una arquitectura basada en atención puede ser una alternativa sólida para problemas tabulares de recursos humanos.
 
 ---
 ## Fuente del dataset
 
-- Rohit Kumar. *Employee Promtion Prediction Dataset*. Kaggle.
+- Kumar, R. (2026). *Employee Promtion Prediction Dataset* [Data set]. Kaggle. Actualizado hace un mes. https://www.kaggle.com/datasets/rohit8527kmr7518/employee-promtion-prediction
+- Derrazi, A., & Roshan Sharami, J. P. (2026). *Integrating SAINT with Tree-Based Models: A Case Study in Employee Attrition Prediction*. arXiv. https://arxiv.org/abs/2604.10337
 
