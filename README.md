@@ -4,8 +4,7 @@
 
 ## Leer la documentación
 
-La documentación del proyecto se encuntra en `documentation.md`
-
+La documentación del proyecto se encuentra en [documentation.md](./documentation.md)
 
 ## Instalar y Ejecutar
 
@@ -44,23 +43,24 @@ Procesa múltiples registros desde un archivo CSV.
 
 | Archivo | Descripción |
 |---------|-------------|
-| `train.py` | Entrena el modelo con los datos procesados |
-| `app.py` | Interfaz web (Gradio) para predicciones individuales |
-| `inference.py` | Predicción en lote desde CSV |
-| `preprocessing.py` | Limpieza y transformación de datos |
-| `config.py` | Configuración: rutas, hiperparámetros, columnas |
-| `model.py` | Estructura y arquitectura del modelo |
-| `dataset.py` | Carga y gestión del dataset |
-| `utils.py` | Funciones auxiliares |
-| `requirements.txt` | Dependencias del proyecto |
-| `Employee_Promotion_Prediction.ipynb` | Análisis exploratorio de datos |
-| `documentation.md` | Documentación detallada |
-| `data/` | Dataset original en CSV |
-| `outputs/` | Modelo entrenado y resultados |
-
+| [`train.py`](./train.py) | Entrena el modelo con los datos procesados |
+| [`app.py`](./app.py) | Interfaz web (Gradio) para predicciones individuales |
+| [`inference.py`](./inference.py) | Predicción en lote desde CSV |
+| [`preprocessing.py`](./preprocessing.py) | Limpieza y transformación de datos |
+| [`config.py`](./config.py) | Configuración: rutas, hiperparámetros, columnas |
+| [`model.py`](./model.py) | Estructura y arquitectura del modelo |
+| [`dataset.py`](./dataset.py) | Carga y gestión del dataset |
+| [`utils.py`](./utils.py) | Funciones auxiliares |
+| [`requirements.txt`](./requirements.txt) | Dependencias del proyecto |
+| [`Employee_Promotion_Prediction.ipynb`](./Employee_Promotion_Prediction.ipynb) | Análisis exploratorio de datos |
+| [`documentation.md`](./documentation.md) | Documentación detallada |
+| [`data/`](./data/) | Dataset original en CSV |
+| [`outputs/`](./outputs/) | Modelo entrenado y resultados |
 ---
 
 ## Dataset
 
-Dataset: `data/employee_promotion_prediction.csv`
+Dataset: [`data/employee_promotion_prediction.csv`](./data/employee_promotion_prediction.csv)
+
+Dataset original disponible en Kaggle: [Employee Promtion Prediction Dataset](https://www.kaggle.com/datasets/rohit8527kmr7518/employee-promtion-prediction)
 
