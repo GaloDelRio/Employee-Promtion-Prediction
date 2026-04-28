@@ -329,6 +329,20 @@ El flujo general del proyecto empieza en train.py, donde se cargan los datos y s
 
 ---
 
+## Respaldo de las métricas con el artículo de referencia
+
+Como se mencionó anteriormente, para el desarrollo del modelo **SAINT-like** se tomó como referencia el artículo *Integrating SAINT with Tree-Based Models: A Case Study in Employee Attrition Prediction*. Por esa misma razón, la estrategia de evaluación también se alineó con los criterios utilizados en ese trabajo, de modo que tanto la arquitectura como la forma de medir resultados siguieran una base metodológica coherente.
+
+En dicho artículo, los autores establecen como métrica principal **ROC-AUC**, complementándola con **Precision, Recall y F1-score** para obtener una visión más completa del comportamiento de los modelos. Esto demuestra que, en investigaciones recientes sobre modelos basados en SAINT aplicados a datos laborales tabulares, no se considera suficiente evaluar únicamente con accuracy, sino que se priorizan métricas capaces de analizar discriminación entre clases y desempeño sobre la clase positiva. 
+
+La elección de esas mismas métricas en este proyecto tiene sentido porque el problema es equivalente en estructura al del artículo: ambos trabajan con información de empleados, variables tabulares mixtas (numéricas y categóricas) y una salida binaria. En el artículo se predice **attrition** (abandono laboral), mientras que en este proyecto se predice **promotion** (promoción laboral). Aunque cambia la variable objetivo, la naturaleza del problema y el tipo de modelo evaluado son comparables.
+
+Además, los resultados reportados por los autores muestran por qué es importante usar varias métricas al mismo tiempo. Por ejemplo, el modelo SAINT obtuvo el mayor **recall** y uno de los mejores **F1-score**, pero no la mejor **precision** ni el mejor **ROC-AUC**. Esto confirma que cada métrica revela una dimensión distinta del rendimiento y que una sola medida no describe completamente el comportamiento del modelo. Esa misma lógica se siguió en este proyecto al comparar iteraciones y decidir cuál configuración era más conveniente según el objetivo buscado.
+
+En consecuencia, las métricas utilizadas en esta investigación no fueron seleccionadas de forma arbitraria. Su uso está directamente respaldado por el mismo artículo que sirvió como base para la implementación del modelo, fortaleciendo así la consistencia académica y metodológica del trabajo completo.
+
+---
+
 ## Iteraciones del modelo SAINT-like
 
 A continuación se presentan las distintas iteraciones evaluadas del modelo SAINT-like, incluyendo la configuración utilizada en cada caso, los resultados obtenidos y la razón por la cual se eligió probar esa combinación de hiperparámetros.
