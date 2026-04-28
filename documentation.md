@@ -1,4 +1,6 @@
-# Reporte del dataset y preprocesamiento realizado
+# Reporte 
+
+El objetivo de este proyecto es desarrollar un flujo completo de machine learning para resolver un problema de clasificación binaria. A través de este flujo se busca preparar y analizar el dataset, aplicar técnicas de preprocesamiento, entrenar un modelo tradicional como Random Forest y posteriormente compararlo contra un modelo basado en un artículo del estado del arte el cual sera refinado apartir del cambio en sus hiperparametros.
 
 ## Dataset utilizado
 
@@ -8,7 +10,7 @@ Este conjunto de datos está orientado al análisis de variables relacionadas co
 
 Además, la tasa de promoción aproximada de **10%**, lo que lo convierte en un problema de clasificación binaria con desbalance de clases.
 
-En términos generales, el dataset reúne información que puede representar distintos factores asociados a una promoción laboral, como desempeño, historial reciente, participación en proyectos, entrenamiento, asistencia y otros indicadores internos. Esto es valioso en IA porque los modelos predictivos funcionan mejor cuando existen múltiples señales relevantes que, al combinarse, permiten detectar patrones que no siempre son evidentes con reglas manuales. Debido a esto, resulta adecuado para un problema de machine learning supervisado enfocado en clasificación, donde la meta es aprender patrones que permitan distinguir entre empleados promovidos y no promovidos. Además, este tipo de dataset es especialmente útil para inteligencia artificial porque reúne múltiples variables numéricas y categóricas que reflejan decisiones reales de recursos humanos, permitiendo entrenar modelos capaces de identificar relaciones complejas entre desempeño, experiencia, capacitación y contexto laboral.
+En términos generales, el dataset reúne información que puede representar distintos factores asociados a una promoción laboral, como desempeño, historial reciente, participación en proyectos, entrenamiento, asistencia y otros indicadores internos. Esto es valioso en machine learning porque los modelos predictivos funcionan mejor cuando existen múltiples señales relevantes que, al combinarse, permiten detectar patrones que no siempre son evidentes con reglas manuales. Debido a esto, resulta adecuado para un problema de machine learning supervisado enfocado en clasificación, donde la meta es aprender patrones que permitan distinguir entre empleados promovidos y no promovidos. Además, este tipo de dataset es especialmente útil para inteligencia artificial porque reúne múltiples variables numéricas y categóricas que reflejan decisiones reales de recursos humanos, permitiendo entrenar modelos capaces de identificar relaciones complejas entre desempeño, experiencia, capacitación y contexto laboral.
 
 ---
 
@@ -672,11 +674,11 @@ En términos prácticos, SAINT-like fue claramente superior para detectar emplea
 
 ## Conclusión
 
-En este trabajo se desarrolló un flujo completo de deep-learning para predecir promociones laborales, abarcando desde la selección y preparación del dataset hasta la comparación y refinamiento de modelos. El preprocesamiento aplicado permitió trabajar con datos más limpios y adecuados para entrenamiento, mientras que el manejo del desbalance fue clave para evaluar correctamente la clase positiva.
+En este proyecto se desarrolló un flujo completo de machine learning y deep learning para predecir promociones laborales, desde la selección y preparación del dataset hasta la evaluación, comparación y refinamiento de modelos. El preprocesamiento permitió transformar los datos en un formato adecuado para el entrenamiento, mientras que el manejo del desbalance de clases fue fundamental para evaluar correctamente el desempeño sobre los empleados promovidos.
 
-Los resultados mostraron que el modelo SAINT-like superó a Random Forest, especialmente en métricas relevantes para datos desbalanceados. Entre las iteraciones probadas, la Iteración 4 fue la mejor opción global al obtener el mayor recall, ROC-AUC y PR-AUC, destacando en la detección de empleados promovidos.
+Los resultados mostraron que el modelo SAINT-like superó al modelo tradicional Random Forest, especialmente en métricas relevantes para problemas desbalanceados como recall, F1-score, ROC-AUC y PR-AUC. Entre las iteraciones evaluadas, la Iteración 4 fue seleccionada como la mejor opción global, ya que obtuvo el mayor recall, ROC-AUC y PR-AUC, destacando por su capacidad para identificar correctamente a una mayor proporción de empleados promovidos.
 
-Finalmente, también se comprobó que aumentar la complejidad del modelo no garantiza mejores resultados, por lo que el ajuste de hiperparámetros debe buscar equilibrio entre capacidad de aprendizaje y generalización. En conjunto, el proyecto demuestra que una arquitectura basada en atención puede ser una alternativa sólida para problemas tabulares de recursos humanos.
+Finalmente, se comprobó que aumentar la complejidad del modelo no siempre garantiza mejores resultados. Por ello, el ajuste de hiperparámetros debe buscar un equilibrio entre capacidad de aprendizaje y generalización. En conjunto, el proyecto demuestra que una arquitectura basada en atención puede ser una alternativa sólida frente a modelos tradicionales para problemas tabulares de recursos humanos.
 
 ---
 ## Fuente del dataset
