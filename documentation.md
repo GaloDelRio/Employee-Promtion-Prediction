@@ -2,10 +2,13 @@
 
 ## Dataset utilizado
 
-Para este proyecto se utilizó el dataset **Employee Promtion Prediction Dataset**, publicado en Kaggle por **Rohit Kumar**. Este conjunto de datos está orientado al análisis de variables relacionadas con el desempeño, compromiso y características laborales de empleados, con el objetivo de predecir si un colaborador será promovido o no. Este contiene alrededor de **100,000 registros**,con **43 variables** y una variable objetivo llamada **promoted**.
+Para este proyecto se utilizó el dataset Employee Promtion Prediction Dataset, publicado en Kaggle por Rohit Kumar. Se eligió porque ofrece un volumen amplio de registros, variables variadas y una variable objetivo claramente definida, características importantes para entrenar y evaluar modelos de inteligencia artificial de forma consistente. 
+
+Este conjunto de datos está orientado al análisis de variables relacionadas con el desempeño, compromiso y características laborales de empleados, con el objetivo de predecir si un colaborador será promovido o no. Este contiene alrededor de **100,000 registros**,con **43 variables** y una variable objetivo llamada **promoted**.
 
 Además, la tasa de promoción aproximada de **10%**, lo que lo convierte en un problema de clasificación binaria con desbalance de clases.
-En términos generales, el dataset reúne información que puede representar distintos factores asociados a una promoción laboral, como desempeño, historial reciente, participación en proyectos, entrenamiento, asistencia y otros indicadores internos. Debido a esto, resulta adecuado para un problema de *machine learning* supervisado enfocado en clasificación, donde la meta es aprender patrones que permitan distinguir entre empleados promovidos y no promovidos.
+
+En términos generales, el dataset reúne información que puede representar distintos factores asociados a una promoción laboral, como desempeño, historial reciente, participación en proyectos, entrenamiento, asistencia y otros indicadores internos. Esto es valioso en IA porque los modelos predictivos funcionan mejor cuando existen múltiples señales relevantes que, al combinarse, permiten detectar patrones que no siempre son evidentes con reglas manuales. Debido a esto, resulta adecuado para un problema de machine learning supervisado enfocado en clasificación, donde la meta es aprender patrones que permitan distinguir entre empleados promovidos y no promovidos. Además, este tipo de dataset es especialmente útil para inteligencia artificial porque reúne múltiples variables numéricas y categóricas que reflejan decisiones reales de recursos humanos, permitiendo entrenar modelos capaces de identificar relaciones complejas entre desempeño, experiencia, capacitación y contexto laboral.
 
 ---
 
