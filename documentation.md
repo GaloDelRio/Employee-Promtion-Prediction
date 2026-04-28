@@ -214,6 +214,9 @@ La principal diferencia es que el modelo usado en el proyecto toma las variables
 
 Sin embargo, el artículo tomado como referencia no fue usado como una receta exacta para replicar, sino como una guía conceptual. De hecho, ese trabajo reporta que los modelos basados en árboles mantuvieron un mejor desempeño que SAINT y que los enfoques híbridos evaluados. Por esta razón, en este proyecto el uso de SAINT-like se entiende principalmente como una alternativa experimental y de comparación, útil para analizar otra familia de modelos sobre el mismo problema.
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/30ebea11-ef03-4fe4-bae1-d0ac2560ebaa" />
+
+
 ---
 
 ## ¿Cómo funciona?
